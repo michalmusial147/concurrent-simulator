@@ -5,7 +5,10 @@ import { Component } from '@angular/core';
   template: `
     <div class="header">
       Concurrent
-    </div><div class="margin-top-15"><app-server-view></app-server-view></div>
+    </div>
+    <div class="margin-top-15">
+      <app-server-view></app-server-view>
+    </div>
   `,
   styleUrls: ['./app.component.scss']
 })

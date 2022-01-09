@@ -10,6 +10,7 @@ import { NodeComponent } from './components/node/node.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatCardModule} from '@angular/material/card';
 import {MatIconModule} from '@angular/material/icon';
+import {MatTableModule} from '@angular/material/table';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import {MatIconModule} from '@angular/material/icon';
         AppRoutingModule,
         BrowserAnimationsModule,
         MatCardModule,
-        MatIconModule
+        MatIconModule,
+        MatTableModule
     ],
   providers: [],
   bootstrap: [AppComponent]
