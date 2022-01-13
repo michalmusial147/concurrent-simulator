@@ -3,14 +3,21 @@ import {ClientData, ClientStatus, File, Node, NodeStatus} from './model/client-d
 import {MatButtonToggleChange} from '@angular/material/button-toggle';
 import {interval, Subject, Subscription} from 'rxjs';
 
-
 function rand(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1) + min)
 }
 
-
 function calcScore(file: File, waitingFrom: Date): number{
-  return file.weight + waitingFrom.getSeconds();
+  const now = new Date();
+  return calcWeightScore(file.weight) + calcTimeScore(now.getTime() - waitingFrom.getTime() / 1000);
+}
+
+function calcWeightScore(weight: number): number{
+  return Math.pow(weight, 2) *  Math.pow(10, -5);
+}
+
+function calcTimeScore(seconds: number): number{
+  return 1 / (Math.pow(seconds, 2));
 }
 
 @Component({
@@ -27,7 +34,7 @@ function calcScore(file: File, waitingFrom: Date): number{
       </mat-button-toggle-group>
       <button mat-raised-button color="primary" (click)="clear()">Clear</button>
       <button mat-raised-button color="primary" (click)="init()">Init</button>
-      <button mat-raised-button color="primary">Add</button>
+      <button mat-raised-button color="primary" (click)="addClient()">Add client</button>
 <!--      <mat-checkbox-->
 <!--        class="checkbox-theme"-->
 <!--        color="primary"-->
@@ -41,19 +48,20 @@ function calcScore(file: File, waitingFrom: Date): number{
         <mat-label>Interval</mat-label>
         <input matInput type="number" [(ngModel)]="speed" (change)="speedChanged($event)">
       </mat-form-field>
+      <mat-form-field class="interval-form-field" appearance="outline">
+        <mat-label>Max files range</mat-label>
+        <input matInput type="number" [(ngModel)]="maxFiles" (change)="speedChanged($event)">
+      </mat-form-field>
     </div>
     <div class="main-wrapper">
-      <app-server-view [nodes]="nodes"></app-server-view>
+      <app-server-view style="margin-bottom: 50px" [nodes]="nodes"></app-server-view>
       <app-clients-view [clients]="clients" (remove)="removeClient($event)"></app-clients-view>
     </div>
   `,
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  private title = 'app';
   checked = false;
-  indeterminate = false;
-  labelPosition: 'before' | 'after' = 'after';
   disabled = false;
   clients: ClientData[] = [];
   startToggle: 'start';
@@ -65,6 +73,7 @@ export class AppComponent implements OnInit {
   fileID: number = 0;
   nodes: Node[];
   private currentSubscription: Subscription = new Subscription();
+  maxFiles: any = 15;
 
 
   ngOnInit(): void {
@@ -150,7 +159,7 @@ export class AppComponent implements OnInit {
     const now = new Date();
     const clientsCount = rand(6, 15);
     for (let i = 0; i < clientsCount; i++) {
-      const filesCount = rand(3, 6);
+      const filesCount = rand(3, this.maxFiles);
       let newClient: ClientData = {
         clientId: i.toString(),
         files: [],
@@ -212,4 +221,16 @@ export class AppComponent implements OnInit {
     this.clients.splice(this.clients.findIndex(client => client.clientId === $event), 1);
   }
 
+  addClient() {
+    const newclientId = this.clients.length
+    this.clients.push(
+      {
+        clientId: newclientId.toString(),
+        files: [],
+        waitingFrom: new Date(),
+        score: 0,
+        status: ClientStatus.WAITING
+      }
+    );
+  }
 }

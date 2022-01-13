@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ClientData, ClientStatus} from '../../model/client-data';
 
 @Component({
@@ -15,7 +15,20 @@ import {ClientData, ClientStatus} from '../../model/client-data';
       <mat-card-content>
         <app-client-files [files]="client.files"></app-client-files>
       </mat-card-content>
-      <mat-card-actions style="display: flex; justify-content: end">
+      <mat-card-actions style="display: flex; justify-content: space-between">
+        <div>
+        <mat-form-field class="interval-form-field" appearance="legacy">
+          <mat-label>Weight</mat-label>
+          <input matInput type="number" [(ngModel)]="weight" >
+        </mat-form-field>
+        <mat-form-field class="interval-form-field" appearance="legacy">
+          <mat-label>ID</mat-label>
+          <input matInput type="number" [(ngModel)]="id" >
+        </mat-form-field>
+        </div>
+        <button (click)="addFile()" mat-icon-button color="accent" aria-label="Example icon button with a home icon">
+          <mat-icon>add</mat-icon>
+        </button>
         <button (click)="removeClient()" mat-icon-button color="accent" aria-label="Example icon button with a home icon">
           <mat-icon>delete</mat-icon>
         </button>
@@ -28,9 +41,12 @@ export class ClientComponent implements OnInit {
 
   @Input() client: ClientData;
   @Output() remove = new EventEmitter<string>();
-  constructor() { }
+  weight: number = 0;
+  id: string = ''
+  constructor( private changeDetectorRefs: ChangeDetectorRef) { }
 
   ngOnInit(): void {
+    this.changeDetectorRefs.detectChanges();
   }
 
   renderStatus() {
@@ -46,5 +62,16 @@ export class ClientComponent implements OnInit {
 
   removeClient() {
     this.remove.emit(this.client.clientId);
+  }
+
+  addFile() {
+    this.client.files.push();
+    this.client.files = [... this.client.files, {
+      fileId: this.id,
+      weight: this.weight,
+      sent: 0,
+    }];
+    this.changeDetectorRefs.detectChanges();
+    console.log(this.client.files)
   }
 }
