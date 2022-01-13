@@ -1,6 +1,11 @@
 @import "src/styles.scss";
-
-.header {
+.main-wrapper{
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 140px);
+  justify-content: space-between;
+}
+.header1 {
   height: 70px;
   background-color: $blue;
   font-size: 26px;
@@ -10,12 +15,21 @@
   align-items: center;
   font-family: Jamrul, fantasy;
 }
-.app-server {
+.header2 {
+  height: 70px;
+  background-color: $ghost-white;
+  font-size: 26px;
   padding-left: 15%;
-  padding-right: 15%;
+  display: flex;
+  align-items: center;
+  font-family: Jamrul, fantasy;
+  margin-bottom: 50px;
+  gap: 10px;
 }
-
-.margin-top-15 {
- margin-top: 50px;
+.timer{
+  padding-left: 20px;
+  font-family: "Droid Serif";
 }
-
+.interval-form-field{
+  max-height: 70px;
+}

@@ -1,17 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
+import {Node} from '../../model/client-data';
 
 @Component({
   selector: 'app-server-view',
   template: `
     <div class="column">
-      <app-node *ngFor="let id of nodeIds " [nodeId]="id.toString()"></app-node>
+      <app-node *ngFor="let node of nodes " [node]="node"></app-node>
     </div>
   `,
   styleUrls: ['./server-view.component.scss']
 })
 export class ServerViewComponent implements OnInit {
 
-  nodeIds = [1, 2, 3, 4, 5];
+  @Input()nodes: Node[];
   constructor() { }
 
   ngOnInit(): void {
