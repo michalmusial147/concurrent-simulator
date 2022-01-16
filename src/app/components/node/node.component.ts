@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Node, NodeStatus} from '../../model/client-data';
+import {File, Node, NodeStatus} from '../../model/client-data';
 
 @Component({
   selector: 'app-node',
@@ -17,6 +17,7 @@ import {Node, NodeStatus} from '../../model/client-data';
 export class NodeComponent implements OnInit {
 
   @Input() node: Node;
+  @Input() files: File[];
   constructor() { }
 
   ngOnInit(): void {
@@ -26,6 +27,15 @@ export class NodeComponent implements OnInit {
     if(NodeStatus.WAITING === this.node.status){
       return 'waiting'
     }
-    else return 'downloading file: ' + this.node.fileId + ' from client: ' + this.node.clientId;
+    const result = this.files.find(file => file.fileId === this.node.fileId);
+    if(result){
+      return 'downloading file: ' + this.node.fileId + ' from client: ' + this.node.clientId + ' with progress:  ' + this.calcSendPercent(result.weight, result.sent) + '%';
+    }
+    return 'no file';
+  }
+
+
+  calcSendPercent(weight: number, sent: number): number {
+    return Math.round(sent / weight * 100);
   }
 }

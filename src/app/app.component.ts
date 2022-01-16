@@ -9,15 +9,15 @@ function rand(min: number, max: number): number {
 
 function calcScore(file: File, waitingFrom: Date): number{
   const now = new Date();
-  return calcWeightScore(file.weight) + calcTimeScore(now.getTime() - waitingFrom.getTime() / 1000);
+  return calcWeightScore(file.weight) + calcTimeScore(now.getTime() - waitingFrom.getTime());
 }
 
 function calcWeightScore(weight: number): number{
-  return Math.pow(weight, 2) *  Math.pow(10, -5);
+  return Math.pow(weight, 2) *  Math.pow(10, -7);
 }
 
 function calcTimeScore(seconds: number): number{
-  return 1 / (Math.pow(seconds, 2));
+  return 1 / (Math.pow(seconds, 2)) * Math.pow(10, -14);
 }
 
 @Component({
@@ -50,11 +50,11 @@ function calcTimeScore(seconds: number): number{
       </mat-form-field>
       <mat-form-field class="interval-form-field" appearance="outline">
         <mat-label>Max files range</mat-label>
-        <input matInput type="number" [(ngModel)]="maxFiles" (change)="speedChanged($event)">
+        <input matInput type="number" [(ngModel)]="maxFiles">
       </mat-form-field>
     </div>
     <div class="main-wrapper">
-      <app-server-view style="margin-bottom: 50px" [nodes]="nodes"></app-server-view>
+      <app-server-view style="margin-bottom: 50px" [nodes]="nodes" [files]="getAllFiles()"></app-server-view>
       <app-clients-view [clients]="clients" (remove)="removeClient($event)"></app-clients-view>
     </div>
   `,
@@ -75,6 +75,11 @@ export class AppComponent implements OnInit {
   private currentSubscription: Subscription = new Subscription();
   maxFiles: any = 15;
 
+  getAllFiles(): File[]{
+    const allFiles: File[] = [];
+    this.clients.forEach(client => allFiles.push(... client.files));
+    return allFiles;
+  }
 
   ngOnInit(): void {
     this.source$.subscribe(val => {
@@ -92,6 +97,9 @@ export class AppComponent implements OnInit {
               clientNode.status = NodeStatus.WAITING;
             }
           client.files.shift();
+            if(client.files.length === 0){
+               this.clients.splice(this.clients.findIndex(el => el.clientId === client.clientId), 1);
+            }
           }
         });
         this.nodes.forEach(node => {

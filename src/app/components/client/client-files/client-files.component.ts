@@ -1,5 +1,6 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, ViewChild} from '@angular/core';
 import {File} from '../../../model/client-data';
+import {MatTable} from '@angular/material/table';
 
 @Component({
   selector: 'app-client-files',
@@ -29,14 +30,16 @@ import {File} from '../../../model/client-data';
   styleUrls: ['./client-files.component.scss']
 })
 export class ClientFilesComponent   {
-
+  @ViewChild(MatTable) table: MatTable<any>;
   @Input() files: File[];
 
   constructor() { }
-
   displayedColumns: string[] = ['name',  'weight',  'sent'];
   dataSource= [];
-
+  delete(row: any): void {
+    /* delete logic here */
+    this.table.renderRows();
+  }
   calcSendPercent(weight: number, sent: number): number {
     return Math.round(sent / weight * 100);
   }
